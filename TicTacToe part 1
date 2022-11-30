@@ -1,0 +1,159 @@
+//h
+
+#include<string>
+#include<vector>
+#include<iostream>
+
+#ifndef TIC_TAC_TOE_H
+#define TIC_TAC_TOE_H
+
+class TicTacToe
+{
+public:
+    bool game_over();
+    void start_game(std::string first_player);
+    void mark_board(int position);
+    std::string get_player()const{return player;}
+    void display_board()const;
+private:
+    std::string player;
+    std::vector<std::string> pegs{9, " "};
+    void clear_board();
+    void set_next_player();
+    bool check_board_full();
+};
+
+#endif
+------------------------------------------------------------
+//cpp
+#include "tic_tac_toe.h"
+
+using std::cout;
+
+bool TicTacToe :: game_over()
+{
+    return check_board_full();
+}
+
+void TicTacToe ::  start_game(std::string first_player)
+{
+    player = first_player;
+    clear_board();
+}
+
+void TicTacToe :: mark_board(int position)
+{
+    pegs[position-1] = player;
+    set_next_player();
+}
+
+void TicTacToe :: display_board()const
+{
+    for(long unsigned int i=0; i < pegs.size(); i+=3)
+    {
+        cout<<pegs[i]<<"|"<<pegs[i+1]<<"|"<<pegs[i+2]<<"\n";
+    }
+
+}
+
+// Private functions 
+
+void TicTacToe:: clear_board()
+{
+    for(auto& peg : pegs )
+    {
+        peg = " ";
+    }
+}
+
+void TicTacToe :: set_next_player()
+{
+    if(player == "X")
+    {
+        player = "O";
+    }
+    else
+    {
+        player = "X";
+    }
+}
+bool TicTacToe :: check_board_full()
+{
+    for(long unsigned int i=0; i < pegs.size(); i++)
+    {
+        if(pegs[i] == " ")
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+----------------------------------------------------------------
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "catch.hpp"
+#include "tic_tac_toe.h"
+
+TEST_CASE("Verify Test Configuration", "verification") {
+	REQUIRE(true == true);
+}
+
+TEST_CASE("Test if the board is full") 
+{
+	TicTacToe game;
+
+	game.mark_board(1);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(2);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(3);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(4);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(5);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(7);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(6);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(9);
+	REQUIRE(game.game_over() == false);
+	game.mark_board(8);
+	REQUIRE(game.game_over() == true);
+
+
+}
+------------------------------------------------------------
+#include"tic_tac_toe.h"
+#include<iostream>
+
+using std::cout; using std::cin; using std::string;
+
+int main() 
+{
+	TicTacToe game;
+	string first_player;
+	char user_choice = 'N';
+	do
+	{
+		cout<<"Enter first player: ";
+		cin>>first_player;
+
+		game.start_game(first_player);
+		int position;
+
+		while(!game.game_over())
+		{
+			cout<<"Enter a position: ";
+			cin>>position;
+			game.mark_board(position); 
+			game.display_board();
+		}
+
+		cout<<"Play Again Y or N: ";
+		cin>> user_choice;
+
+
+	}while(user_choice == 'Y' || user_choice == 'y');
+	return 0;
+}
